@@ -1,0 +1,23 @@
+.font-14 {
+	-fx-font-size: 14px;
+}
+
+.font-16 {
+	-fx-font-size: 16px;
+}
+
+.font-18 {
+	-fx-font-size: 18px;
+}
+
+.msgBg {
+	-fx-background-color:#ffffff;
+	-fx-border-color:#dbdedd;
+	-fx-border-width:1px;
+}
+
+.msgBgLinear {
+	-fx-border-color:#b9b7b7;
+	-fx-border-width:1px;
+	-fx-background-color:linear-gradient(to bottom, #ffffff 0.0%, #dbdedd 50%, #ffffff 100%);
+}

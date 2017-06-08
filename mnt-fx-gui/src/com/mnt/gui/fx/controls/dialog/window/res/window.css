@@ -1,0 +1,48 @@
+.font-14 {
+	-fx-font-size: 14px;
+}
+
+.font-16 {
+	-fx-font-size: 16px;
+}
+
+.font-18 {
+	-fx-font-size: 18px;
+}
+
+.windowBg {
+	-fx-background-color:#ffffff;
+	-fx-border-color:#b9b7b7;
+	-fx-border-width:1px;
+}
+
+.btnCommon {
+	-fx-background-color:#f7f7f7;
+	-fx-border-color:#dbdedd;
+	-fx-border-width:1px;
+}
+
+.btnCommon:hover {
+	-fx-background-color:#dbdedd;
+}
+
+.windowTitle {
+	-fx-background-color:#f7f7f7
+}
+
+.btnClose {
+	-fx-background-color:#f7f7f7
+}
+
+.btnClose:hover {
+	-fx-background-color:#ff5159
+}
+
+.hlinkBorder {
+	-fx-border-width:0px;
+}
+
+.bottomBg {
+	-fx-border-color:#f7f7f7;
+	-fx-border-width:1px 0px 0px 0px;
+}
