@@ -1,15 +1,22 @@
 package com.mnt.gui.fx.test;
 
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.scene.control.TableView;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Predicate;
 
 import com.mnt.gui.fx.base.BaseController;
 import com.mnt.gui.fx.controls.dialog.DialogFactory;
+import com.mnt.gui.fx.controls.searchbox.SearchBoxFactory;
+import com.mnt.gui.fx.controls.searchbox.action.SelectAction;
 import com.mnt.gui.fx.table.TabelCellFactory;
 import com.mnt.gui.fx.table.TableViewSupport;
 import com.mnt.gui.fx.test.data.TestTableData;
 import com.mnt.gui.fx.view.anno.MainView;
+
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 
 /**
  * 
@@ -30,6 +37,11 @@ public class MainController extends BaseController {
     //表格支持
     private TableViewSupport<TestTableData> tvwSupport;
     
+    @FXML
+    private TextField txtTest;
+    
+    private List<String> testStrs = new ArrayList<>();
+    
 	@Override
 	public void init() {
 		tvwSupport = TabelCellFactory.createTableSupport(true, tvwTest, TestTableData.class);
@@ -44,6 +56,30 @@ public class MainController extends BaseController {
 		s.setChoice(true);
 		tvwSupport.addItem(s);
 		s.setLabel("newlabel");
+		
+		testStrs.add("test1");
+		testStrs.add("test2");
+		testStrs.add("test3");
+		testStrs.add("测试");
+		testStrs.add("1测试1");
+		testStrs.add("我的");
+		
+		SearchBoxFactory.getInstance().<String>buildTextFiled(txtTest, testStrs, new SelectAction<String>() {
+			@Override
+			public void action(String t) {
+				
+				txtTest.setText(t);
+			}
+		}, new Predicate<String>() {
+			@Override
+			public boolean test(String t) {
+				if(t.contains(txtTest.getText()))
+				{
+					return true;
+				}
+				return false;
+			}
+		});
 	}
 	
     @FXML
