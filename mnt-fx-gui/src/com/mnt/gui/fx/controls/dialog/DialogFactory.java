@@ -2,6 +2,13 @@ package com.mnt.gui.fx.controls.dialog;
 
 import java.util.LinkedList;
 
+import com.mnt.gui.fx.base.BaseController;
+import com.mnt.gui.fx.controls.dialog.action.OnAction;
+import com.mnt.gui.fx.controls.dialog.confirm.ConfirmDialog;
+import com.mnt.gui.fx.controls.dialog.message.MessageDialog;
+import com.mnt.gui.fx.controls.dialog.message.MessageType;
+import com.mnt.gui.fx.controls.dialog.window.WindowDialog;
+
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -9,13 +16,6 @@ import javafx.stage.Modality;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-
-import com.mnt.gui.fx.base.BaseController;
-import com.mnt.gui.fx.controls.dialog.action.OnAction;
-import com.mnt.gui.fx.controls.dialog.confirm.ConfirmDialog;
-import com.mnt.gui.fx.controls.dialog.message.MessageDialog;
-import com.mnt.gui.fx.controls.dialog.message.MessageType;
-import com.mnt.gui.fx.controls.dialog.window.WindowDialog;
 
 /**
  * <p>
@@ -26,8 +26,6 @@ import com.mnt.gui.fx.controls.dialog.window.WindowDialog;
  * @since   FX8.0
  */
 public class DialogFactory {
-	
-	private static DialogFactory INSTANCE;
 	
 	//最大显示的消息数
 	private static int MAX_MESSAGE_COUNT = 6;
@@ -41,13 +39,15 @@ public class DialogFactory {
 	//已经显示的消息队列
 	private LinkedList<MessageDialog> showMessageDeque = new LinkedList<>();
 
+	
+	private static final class SingletonHolder
+	{
+		private static final DialogFactory	INSTANCE = new DialogFactory();
+	}
+
 	public static DialogFactory getInstance()
 	{
-		if(null == INSTANCE)
-		{
-			INSTANCE = new DialogFactory();
-		}
-		return INSTANCE;
+		return SingletonHolder.INSTANCE;
 	}
 	
 	private DialogFactory()
