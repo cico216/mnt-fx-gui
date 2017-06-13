@@ -42,16 +42,11 @@ public class ApplicationUtil {
 	 */
 	private Dimension screenSize;
 	
-	/**
-	 * 上边框大小
-	 */
-	private int top;
 	
 	private ApplicationUtil()
 	{
 		screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		final Insets scrInsets = Toolkit.getDefaultToolkit().getScreenInsets(GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration());
-		top = scrInsets.top;
 		desktopHeight = screenSize.getHeight() - scrInsets.top - scrInsets.bottom;
 		desktopWidth = screenSize.getWidth() - scrInsets.left - scrInsets.right;
 	}
@@ -62,10 +57,6 @@ public class ApplicationUtil {
 
 	public double getDesktopHeight() {
 		return desktopHeight;
-	}
-	
-	public int getTop() {
-		return top;
 	}
 
 	/**
