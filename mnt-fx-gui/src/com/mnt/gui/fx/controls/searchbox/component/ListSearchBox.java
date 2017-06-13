@@ -121,7 +121,7 @@ public class ListSearchBox<T> extends BaseController {
 	 */
 	private void hidePop()
 	{
-		
+		action.clear();
 		pop.hide();
 	}
 	

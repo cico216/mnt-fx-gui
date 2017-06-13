@@ -11,4 +11,10 @@ public interface SelectAction<T> {
 
 	//点击时触发
 	void action(T t);
+	
+	//为空时出发
+	default void clear()
+	{
+		
+	};
 }
