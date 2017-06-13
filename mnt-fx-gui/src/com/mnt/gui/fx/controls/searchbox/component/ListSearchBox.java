@@ -7,6 +7,7 @@ import java.util.function.Predicate;
 import com.mnt.gui.fx.base.BaseController;
 import com.mnt.gui.fx.controls.searchbox.action.SelectAction;
 import com.mnt.gui.fx.loader.FXMLLoaderUtil;
+import com.mnt.gui.fx.util.ApplicationUtil;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -60,6 +61,7 @@ public class ListSearchBox<T> extends BaseController {
 				
 				if(null == newValue || "".equals(newValue))
 				{
+					action.clear();
 					hidePop();
 				}
 				else
@@ -113,6 +115,9 @@ public class ListSearchBox<T> extends BaseController {
 		Bounds screenBounds = textField.localToScene(textField.getBoundsInLocal());
 		double x = screenBounds.getMinX() + getMainStage().getScene().getWindow().getX() + 3;
 		double y = screenBounds.getMinY() + getMainStage().getScene().getWindow().getY() + screenBounds.getHeight() + 30;
+		double height = (ApplicationUtil.getInstance().getDesktopHeight() - ApplicationUtil.getInstance().getScrInsets().bottom);
+		double windowHeight = height - y;
+		setHeight(windowHeight);
 		pop.show(textField, x, y);
 	}
 	
@@ -121,7 +126,6 @@ public class ListSearchBox<T> extends BaseController {
 	 */
 	private void hidePop()
 	{
-		action.clear();
 		pop.hide();
 	}
 	
