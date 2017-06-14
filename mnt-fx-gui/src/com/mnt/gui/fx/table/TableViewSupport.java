@@ -50,12 +50,14 @@ public class TableViewSupport<S> implements Runnable, Delayed {
 	private final Class<S> clazz;
 	//table泛型的类字段
 	private Field[] fields;
+	
+	//字段名转换后的名称
+	private Map<String, String> fieldNamsMap;
+	
 	//自动更新时间间隔
 	private int autoUpdateTime = 30;
 	//下次刷新数据时间
 	private long nextUpdateTime;
-	//是否自动刷新
-	private boolean autoUpdate;
 	
 	private ObservableList<S> searchItem = FXCollections.observableArrayList();
 	
@@ -67,12 +69,17 @@ public class TableViewSupport<S> implements Runnable, Delayed {
 		this.tvw = tvw;
 		this.clazz = clazz;
 		fields = this.clazz.getDeclaredFields();
-		
+		fieldNamsMap = new HashMap<>();
 		List<Field> fieldsTemp = new ArrayList<>();
 		for (Field field : fields) {
 			if(field.isAnnotationPresent(FXColumn.class))
 			{
 				fieldsTemp.add(field);
+				FXColumn column = field.getAnnotation(FXColumn.class);
+				if(!column.idName().equals(TabelCellFactory.COLUMN_DEFAULT_NAME))
+				{
+					fieldNamsMap.put(field.getName(), column.idName());
+				}
 			}
 		}
 		fields = new Field[fieldsTemp.size()];
@@ -80,7 +87,6 @@ public class TableViewSupport<S> implements Runnable, Delayed {
 		
 		if(autoUpdate)
 		{
-			this.autoUpdate = autoUpdate;
 			nextUpdateTime = getCurrTime() + autoUpdateTime;
 		}
 	}
@@ -129,7 +135,7 @@ public class TableViewSupport<S> implements Runnable, Delayed {
 			lock.lock();
 			for (S s : list) {
 				item.add(s);
-				itemPropertys.put(s, TabelCellFactory.buildPropertys(fields, s));
+				itemPropertys.put(s, TabelCellFactory.buildPropertys(fields, fieldNamsMap, s));
 			}
 		} finally {
 			lock.unlock();
@@ -150,7 +156,7 @@ public class TableViewSupport<S> implements Runnable, Delayed {
 		try {
 			lock.lock();
 			item.add(s);
-			itemPropertys.put(s, TabelCellFactory.buildPropertys(fields, s));
+			itemPropertys.put(s, TabelCellFactory.buildPropertys(fields, fieldNamsMap, s));
 			
 		} finally {
 			lock.unlock();
@@ -275,7 +281,12 @@ public class TableViewSupport<S> implements Runnable, Delayed {
 			List<S> tempItems = new ArrayList<>(item);
 			for (S s : tempItems) {
 				for (Field field : fields) {
-					Property perperty = itemPropertys.get(s).get(field.getName()).getKey();
+					String fieldName = field.getName();
+					if(fieldNamsMap.containsKey(fieldName))
+					{
+						fieldName = fieldNamsMap.get(fieldName);
+					}
+					Property perperty = itemPropertys.get(s).get(fieldName).getKey();
 					if(null != perperty)
 					{
 						final Object value = field.get(s);
@@ -313,7 +324,7 @@ public class TableViewSupport<S> implements Runnable, Delayed {
 	 */
 	public void shutdown()
 	{
-		autoUpdate = false;
+		
 	}
 
 	public ObservableList<S> getItem() {
@@ -341,11 +352,10 @@ public class TableViewSupport<S> implements Runnable, Delayed {
 		
 		try {
 			lock.lock();
-			if(autoUpdate)
-			{
-				updateData();
-				nextUpdateTime = getCurrTime() + autoUpdateTime;
-			}
+			
+			updateData();
+			nextUpdateTime = getCurrTime() + autoUpdateTime;
+			
 		} finally {
 			lock.unlock();
 		}

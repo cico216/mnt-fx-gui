@@ -64,6 +64,7 @@ public abstract class TabelCellFactory {
 				final TableViewSupport<?> TempTak = task;
 				Platform.runLater(() -> {
 					TempTak.run();
+					tableUpdateManager.add(TempTak);
 				});
 			}
 		}, 30, 30);
@@ -200,7 +201,7 @@ public abstract class TabelCellFactory {
 	 * @return
 	 */
 	@SuppressWarnings("rawtypes")
-	public static <S> Map<String, FXPair<Property, Node>> buildPropertys(Field[] fields, S s)
+	public static <S> Map<String, FXPair<Property, Node>> buildPropertys(Field[] fields, Map<String, String> fieldNamsMap, S s)
 	{
 		Map<String, FXPair<Property, Node>> result = new HashMap<>(fields.length);
 		try {
@@ -250,7 +251,15 @@ public abstract class TabelCellFactory {
 						}
 					}
 				});
-				result.put(fieldName, new FXPair<>(property, null));
+				
+				if(fieldNamsMap.containsKey(fieldName))
+				{
+					result.put(fieldNamsMap.get(fieldName), new FXPair<>(property, null));
+				}
+				else
+				{
+					result.put(fieldName, new FXPair<>(property, null));
+				}
 			}
 		} catch (IllegalArgumentException | IllegalAccessException e) {
 			e.printStackTrace();
