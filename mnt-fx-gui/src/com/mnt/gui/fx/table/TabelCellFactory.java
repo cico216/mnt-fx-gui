@@ -142,7 +142,7 @@ public abstract class TabelCellFactory {
 									else 
 									{
 //										Node node = getGraphic();
-										S s = itemTvw.get(getIndex());
+										S s = tvw.getItems().get(getIndex());
 //										result.getCellProperty(s, name).setValue(item);
 										setAlignment(fxColumn.alignment());
 										FXPair<Property, Node> cellProperty = result.getCellProperty(s, name);
