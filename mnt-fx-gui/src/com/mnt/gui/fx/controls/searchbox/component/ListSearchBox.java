@@ -59,6 +59,10 @@ public class ListSearchBox<T> extends BaseController {
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 				
+				if(!textField.isFocused()) {
+					return;
+				}
+				
 				if(null == newValue || "".equals(newValue))
 				{
 					action.clear();
