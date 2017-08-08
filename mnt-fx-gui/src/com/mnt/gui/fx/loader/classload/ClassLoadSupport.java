@@ -1,6 +1,7 @@
 package com.mnt.gui.fx.loader.classload;
 
 import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +45,22 @@ public class ClassLoadSupport<T> {
 		} 
 		throw new NullPointerException("未加载当前索引的类 : " + name);
 		
+	}
+	
+	/**
+	 * 获取所有的脚本
+	 * @return
+	 */
+	public List<T> getScripts() {
+		List<T> result = new ArrayList<>(classesMap.size());
+		try {
+			for (Class<T> t : classesMap.values()) {
+				result.add(t.newInstance());
+			}
+		} catch (InstantiationException | IllegalAccessException e) {
+			
+		}
+		return result;
 	}
 	
 	/**
