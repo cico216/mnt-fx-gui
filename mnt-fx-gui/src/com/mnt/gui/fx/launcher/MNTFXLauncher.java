@@ -1,5 +1,6 @@
 package com.mnt.gui.fx.launcher;
 
+import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -66,14 +67,14 @@ public class MNTFXLauncher extends BaseLauncher {
 				scanClass.add(t);
 				if (t.isAnnotationPresent(MainView.class)) {
 					mainViewAnno = ((MainView) t.getAnnotation(MainView.class));
-					if (t.getSuperclass().isAssignableFrom(BaseController.class)) {
+					if (BaseController.class.isAssignableFrom(t) && !Modifier.isAbstract(t.getModifiers())) {
 						try {
 							mainView = ((BaseController) t.newInstance());
 						} catch (Exception e) {
 							log.error("load mainView error" + t.getName() , e);
 						}
 					}
-				} else if (t.getSuperclass().isAssignableFrom(InitContext.class)) {
+				} else if (InitContext.class.isAssignableFrom(t) && !Modifier.isAbstract(t.getModifiers())) {
 					try {
 						initContext = ((InitContext) t.newInstance());
 					} catch (Exception e) {

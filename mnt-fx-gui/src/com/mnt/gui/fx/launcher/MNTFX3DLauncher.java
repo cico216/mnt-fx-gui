@@ -66,14 +66,14 @@ public class MNTFX3DLauncher extends Base3DLauncher {
 				scanClass.add(t);
 				if (t.isAnnotationPresent(MainView.class)) {
 					mainViewAnno = ((MainView) t.getAnnotation(MainView.class));
-					if (t.getSuperclass().isAssignableFrom(Base3DController.class)) {
+					if (Base3DController.class.isAssignableFrom(t)) {
 						try {
 							mainView = ((Base3DController) t.newInstance());
 						} catch (Exception e) {
 							log.error("load mainView error" + t.getName() , e);
 						}
 					}
-				} else if (t.getSuperclass().isAssignableFrom(InitContext.class)) {
+				} else if (InitContext.class.isAssignableFrom(t)) {
 					try {
 						initContext = ((InitContext) t.newInstance());
 					} catch (Exception e) {
