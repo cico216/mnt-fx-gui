@@ -1,6 +1,5 @@
 package com.mnt.gui.fx.loader.classload;
 
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -94,7 +93,7 @@ public class ClassLoadSupport<T> {
 	public void loadClass(String classDirector)
 	{
 		this.classDirector = classDirector;
-		Pair<URLClassLoader, List<String>> classLoader = FXClassLoader.loadClasses(classDirector);
+		Pair<ClassLoader, List<String>> classLoader = FXClassLoader.loadClasses(classDirector);
 		List<String> classNames = classLoader.getValue();
 		classesMap = new HashMap<String, Class<T>>(classNames.size());
 		for (String className : classNames) {

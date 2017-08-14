@@ -3,19 +3,16 @@ package com.mnt.gui.fx.loader.classload;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
-
-import javafx.util.Pair;
 
 import javax.tools.JavaCompiler;
 import javax.tools.JavaCompiler.CompilationTask;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
+
+import javafx.util.Pair;
 
 /**
  * 
@@ -78,15 +75,29 @@ public class FXClassLoader {
 	 * @param classPath
 	 * @return
 	 */
-	private static URLClassLoader getClassLoader(String classPath)
+	private static ClassLoader getClassLoader(String classPath, List<String> classNames)
 	{
-		URL[] urls = null;
-		try {
-			urls = new URL[] {new URL("file:/"+ classPath)};
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
+//		URL[] urls = null;
+//		try {
+//			urls = new URL[] {new URL("file:/"+ System.getProperty("user.dir") + "/" + classPath)};
+//			
+//			File [] javaFiles = new File(classPath).listFiles((name)->{return name.getName().endsWith(".class");});
+//			urls = new URL[javaFiles.length];
+//			for (int i = 0; i < javaFiles.length; i++) {
+//				urls[i] = javaFiles[i].toURI().toURL();
+//			}
+//		} catch (MalformedURLException e) {
+//			e.printStackTrace();
+//		}
+		
+		String [] classNameArrays = new String[classNames.size()];
+		for (int i = 0; i < classNames.size(); i++) {
+			classNameArrays[i] = classNames.get(i);
 		}
-		return new URLClassLoader(urls);
+		
+		CustomClassLoader cl = new CustomClassLoader(System.getProperty("user.dir") + "/" + classPath, classNameArrays);
+		
+		return cl;
 	}
 	
 	/**
@@ -97,15 +108,15 @@ public class FXClassLoader {
 	 * @create mnt.cico
 	 * @param srcPath
 	 */
-	public final static Pair<URLClassLoader, List<String>> loadClasses(String srcPath) {
+	public final static Pair<ClassLoader, List<String>> loadClasses(String srcPath) {
 		File [] javaFiles = new File(srcPath).listFiles((name)->{return name.getName().endsWith(".java");});
 		String [] filePaths = new String[javaFiles.length];
 		for (int i = 0; i < javaFiles.length; i++) {
 			filePaths[i] = javaFiles[i].getAbsolutePath();
 		}
 		final List<String> classNames = compilerJavaFile(filePaths);
-		final URLClassLoader classLoad = getClassLoader(srcPath);
-		return new Pair<URLClassLoader, List<String>>(classLoad, classNames);
+		final ClassLoader classLoad = getClassLoader(srcPath, classNames);
+		return new Pair<ClassLoader, List<String>>(classLoad, classNames);
 	}
 	
 	/**
@@ -126,7 +137,10 @@ public class FXClassLoader {
 	{
 		String javaName = filePath.substring(filePath.lastIndexOf(FILE_SEPARATOR) + 1);
 		
-		return javaContent.substring(0, javaContent.indexOf(";")).trim().substring(8) + "." + javaName.substring(0, javaName.length() - 5);
+		String filePathUrl = javaContent.substring(0, javaContent.indexOf(";")).trim().substring(8) + "." + javaName.substring(0, javaName.length() - 5);
+		
+				
+		return filePathUrl;
 	}
 
 

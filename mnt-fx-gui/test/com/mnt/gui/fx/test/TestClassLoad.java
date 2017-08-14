@@ -15,6 +15,6 @@ import com.mnt.gui.fx.test.load.TestClass;
  */
 public class TestClassLoad {
 
-	@ClassLoad(srcPath="./load/load")
+	@ClassLoad(srcPath="load/load")
 	public static ClassLoadSupport<TestClass> TEST_CLASS_LOADER;
 }
