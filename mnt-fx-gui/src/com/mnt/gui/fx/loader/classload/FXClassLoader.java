@@ -1,9 +1,10 @@
 package com.mnt.gui.fx.loader.classload;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.tools.JavaCompiler;
@@ -11,6 +12,8 @@ import javax.tools.JavaCompiler.CompilationTask;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
+
+import com.sun.tools.javac.Main;
 
 import javafx.util.Pair;
 
@@ -40,7 +43,7 @@ public class FXClassLoader {
 	 * @param fileDirector
 	 * @return
 	 */
-	private final static List<String> compilerJavaFile(String... fileDirector)
+	private final static List<String> compilerJavaFile(String[] fileDirector)
 	{
 		final List<String> result = new ArrayList<>();
 		StandardJavaFileManager manager = javac.getStandardFileManager(null, null, null);  
@@ -53,8 +56,18 @@ public class FXClassLoader {
 				e.printStackTrace();
 			}
 		 });
-		 StringWriter sw = new StringWriter(); 
-		 CompilationTask compilationTask = javac.getTask(sw, manager, null, null, null, it);  
+//		 StringWriter sw = new StringWriter();
+		 String jarPath = System.getProperty("user.dir") + FILE_SEPARATOR + "bin;";
+		 
+		 try {
+			 jarPath += getJarFiles(System.getProperty("user.dir") + FILE_SEPARATOR +"lib");
+			 jarPath += getJarFiles(System.getProperty("user.dir") + FILE_SEPARATOR +"app");
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
+		 
+		 List<String> options = Arrays.asList(new String[] { "-encoding", "UTF-8", "-classpath", jarPath});
+		 CompilationTask compilationTask = javac.getTask(null, manager, null, options, null, it);  
 		 
 		 compilationTask.call();
 		 try {
@@ -65,6 +78,23 @@ public class FXClassLoader {
 		 
 		return result;
 	}
+	
+	
+	private final static List<String> compilerJavaFile(String srcPath,  String[] fileDirector)
+	{
+		final List<String> result = new ArrayList<>();
+		String filePath = System.getProperty("user.dir") + FILE_SEPARATOR + srcPath;
+		for (String javafile : fileDirector) {
+			
+		    Main.compile(new String[] {"-d", filePath, javafile});
+		    
+		    result.add(javafile);
+		}
+		// System.out.println(System.getProperty("java.home"));  
+		
+		return result;
+    }
+	
 	
 	/**
 	 * 
@@ -89,7 +119,7 @@ public class FXClassLoader {
 //		} catch (MalformedURLException e) {
 //			e.printStackTrace();
 //		}
-		
+//		 System.err.println(System.getProperty("file.encoding"));   
 		String [] classNameArrays = new String[classNames.size()];
 		for (int i = 0; i < classNames.size(); i++) {
 			classNameArrays[i] = classNames.get(i);
@@ -142,6 +172,84 @@ public class FXClassLoader {
 				
 		return filePathUrl;
 	}
+	
+	
+	
+//	   /**
+//     * 查找该目录下的所有的java文件
+//     *
+//     * @param sourceFile
+//     * @param sourceFileList
+//     * @throws Exception
+//     */
+//    private void getSourceFiles(File sourceFile, List<File> sourceFileList) throws Exception {
+//        if (sourceFile.exists() && sourceFileList != null) {//文件或者目录必须存在
+//            if (sourceFile.isDirectory()) {// 若file对象为目录
+//                // 得到该目录下以.java结尾的文件或者目录
+//                File[] childrenFiles = sourceFile.listFiles(new FileFilter() {
+//                    public boolean accept(File pathname) {
+//                        if (pathname.isDirectory()) {
+//                            try {
+//                                new CopyDirectory().copyDirectiory(pathname.getPath(), targetDir + pathname.getPath().substring(pathname.getPath().indexOf("src") + 3, pathname.getPath().length()));
+//                            } catch (IOException e) {
+//                                e.printStackTrace();
+//                            }
+//                            return true;
+//                        } else {
+//                            String name = pathname.getName();
+//                            if (name.endsWith(".java") ? true : false) {
+//                                return true;
+//                            }
+//                            try {
+//                                new CopyDirectory().copyFile(pathname, new File(targetDir + pathname.getPath().substring(pathname.getPath().indexOf("src") + 3, pathname.getPath().length())));
+//                            } catch (IOException e) {
+//                                e.printStackTrace();
+//                            }
+//                            return false;
+//                        }
+//                    }
+//                });
+//                // 递归调用
+//                for (File childFile : childrenFiles) {
+//                    getSourceFiles(childFile, sourceFileList);
+//                }
+//            } else {// 若file对象为文件
+//                sourceFileList.add(sourceFile);
+//            }
+//        }
+//    }
+
+    /**
+     * 查找该目录下的所有的jar文件
+     *
+     * @param jarPath
+     * @throws Exception
+     */
+    private static String getJarFiles(String jarPath) throws Exception {
+    	StringBuilder jars = new StringBuilder();
+        File sourceFile = new File(jarPath);
+        // String jars="";
+        if (sourceFile.exists()) {// 文件或者目录必须存在
+            if (sourceFile.isDirectory()) {// 若file对象为目录
+                // 得到该目录下以.java结尾的文件或者目录
+                sourceFile.listFiles(new FileFilter() {
+                    public boolean accept(File pathname) {
+                        if (pathname.isDirectory()) {
+                            return true;
+                        } else {
+                            String name = pathname.getName();
+                            if (name.endsWith(".jar")) {
+                            	jars.append(pathname.getPath() + ";");
+                                return true;
+                            }
+                            return false;
+                        }
+                    }
+                });
+            }
+        }
+        return jars.toString();
+    }
 
 
 }

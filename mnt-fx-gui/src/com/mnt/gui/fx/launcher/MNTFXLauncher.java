@@ -124,6 +124,7 @@ public class MNTFXLauncher extends BaseLauncher {
 
 	public static void main(String[] args) {
 //		System.setProperty("java.awt.headless", "false");
+//		System.getProperties().put("file.encoding", "UTF-8");
 		launch(args);
 	}
 }
