@@ -5,13 +5,22 @@ import java.net.URL;
 import java.util.function.Consumer;
 
 import com.mnt.gui.fx.loader.classload.ClassLoadUtil;
+import com.mnt.gui.fx.util.DataUtil;
 
 public class TestLoad {
 
 	
-	public static void main(String[] args) {
-		
-		ClassLoadUtil.loadClass(TestClassLoad.class);
+	public static void main(String[] args) throws MalformedURLException {
+		URL urlBin = new URL(DataUtil.BIN_PATH);
+		ClassLoadUtil.loadClass(TestClassLoad.class, ClassLoadUtil.loadJarOrClass(new Consumer<Class<?>>() {
+			public void accept(Class<?> t) {
+				
+				if(t.getName().contains("$"))
+				{
+					return;
+				}
+			}
+		}, urlBin));
 		System.out.println(TestClassLoad.TEST_CLASS_LOADER.newInstance("key2").getValue());
 //		URL url = null;
 //		try {

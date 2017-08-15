@@ -83,7 +83,7 @@ public class MNTFX3DLauncher extends Base3DLauncher {
 			}
 		}, urlBin, urlApp);
 		if (this.initContext != null) {
-			this.initContext.init(scanClass);
+			this.initContext.init(scanClass, classLoad);
 		}
 	}
 
@@ -91,7 +91,7 @@ public class MNTFX3DLauncher extends Base3DLauncher {
 	{
 		log.info("view load succcess");
 		if (this.initContext != null) {
-			this.initContext.afterInitView();
+			this.initContext.afterInitView(classLoad);
 		}
 	}
 

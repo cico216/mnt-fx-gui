@@ -3,6 +3,9 @@ package com.mnt.gui.fx.loader.classload;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -12,8 +15,6 @@ import javax.tools.JavaCompiler.CompilationTask;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
-
-import com.sun.tools.javac.Main;
 
 import javafx.util.Pair;
 
@@ -59,7 +60,7 @@ public class FXClassLoader {
 //		 StringWriter sw = new StringWriter();
 		 String jarPath = System.getProperty("user.dir") + FILE_SEPARATOR + "bin;";
 		 
-		 try {
+		try {
 			 jarPath += getJarFiles(System.getProperty("user.dir") + FILE_SEPARATOR +"lib");
 			 jarPath += getJarFiles(System.getProperty("user.dir") + FILE_SEPARATOR +"app");
 		} catch (Exception e1) {
@@ -80,20 +81,20 @@ public class FXClassLoader {
 	}
 	
 	
-	private final static List<String> compilerJavaFile(String srcPath,  String[] fileDirector)
-	{
-		final List<String> result = new ArrayList<>();
-		String filePath = System.getProperty("user.dir") + FILE_SEPARATOR + srcPath;
-		for (String javafile : fileDirector) {
-			
-		    Main.compile(new String[] {"-d", filePath, javafile});
-		    
-		    result.add(javafile);
-		}
-		// System.out.println(System.getProperty("java.home"));  
-		
-		return result;
-    }
+//	private final static List<String> compilerJavaFile(String srcPath,  String[] fileDirector)
+//	{
+//		final List<String> result = new ArrayList<>();
+//		String filePath = System.getProperty("user.dir") + FILE_SEPARATOR + srcPath;
+//		for (String javafile : fileDirector) {
+//			
+//		    Main.compile(new String[] {"-d", filePath, javafile});
+//		    
+//		    result.add(javafile);
+//		}
+//		// System.out.println(System.getProperty("java.home"));  
+//		
+//		return result;
+//    }
 	
 	
 	/**
@@ -105,7 +106,7 @@ public class FXClassLoader {
 	 * @param classPath
 	 * @return
 	 */
-	private static ClassLoader getClassLoader(String classPath, List<String> classNames)
+	private static ClassLoader getClassLoader(String classPath, List<String> classNames, URLClassLoader appClassLoad)
 	{
 //		URL[] urls = null;
 //		try {
@@ -116,16 +117,43 @@ public class FXClassLoader {
 //			for (int i = 0; i < javaFiles.length; i++) {
 //				urls[i] = javaFiles[i].toURI().toURL();
 //			}
-//		} catch (MalformedURLException e) {
+//			//因为URLClassLoader中的addURL方法的权限为protected所以只能采用反射的方法调用addURL方法  
+//			Method add = URLClassLoader.class.getDeclaredMethod("addURL", new Class[] { URL.class });                                 
+//			add.setAccessible(true);
+//			for (URL url : urls) {
+//				add.invoke(appClassLoad, url); 
+//			}
+//			
+//		} catch (Exception e) {
 //			e.printStackTrace();
 //		}
-//		 System.err.println(System.getProperty("file.encoding"));   
+//		 System.err.println(System.getProperty("file.encoding"));
+		
+		List<String> jarPathUrl = new ArrayList<>();
+		try {
+			jarPathUrl.addAll(getJarFilesPath(System.getProperty("user.dir") + FILE_SEPARATOR +"lib"));
+			jarPathUrl.addAll(getJarFilesPath(System.getProperty("user.dir") + FILE_SEPARATOR +"app"));
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
+		
 		String [] classNameArrays = new String[classNames.size()];
 		for (int i = 0; i < classNames.size(); i++) {
 			classNameArrays[i] = classNames.get(i);
 		}
 		
-		CustomClassLoader cl = new CustomClassLoader(System.getProperty("user.dir") + "/" + classPath, classNameArrays);
+		URL [] urls = new URL[jarPathUrl.size()];
+		for (int i = 0; i < jarPathUrl.size(); i++) {
+			try {
+        		urls[i] = new File(jarPathUrl.get(i)).toURI().toURL();
+        	} catch (MalformedURLException e) {
+        		e.printStackTrace();
+        	}
+		}
+		
+		CustomClassLoader cl = new CustomClassLoader(appClassLoad, System.getProperty("user.dir") + "/" + classPath, classNameArrays, urls);
+		
+		
 		
 		return cl;
 	}
@@ -138,14 +166,14 @@ public class FXClassLoader {
 	 * @create mnt.cico
 	 * @param srcPath
 	 */
-	public final static Pair<ClassLoader, List<String>> loadClasses(String srcPath) {
+	public final static Pair<ClassLoader, List<String>> loadClasses(String srcPath, URLClassLoader appClassLoad) {
 		File [] javaFiles = new File(srcPath).listFiles((name)->{return name.getName().endsWith(".java");});
 		String [] filePaths = new String[javaFiles.length];
 		for (int i = 0; i < javaFiles.length; i++) {
 			filePaths[i] = javaFiles[i].getAbsolutePath();
 		}
 		final List<String> classNames = compilerJavaFile(filePaths);
-		final ClassLoader classLoad = getClassLoader(srcPath, classNames);
+		final ClassLoader classLoad = getClassLoader(srcPath, classNames, appClassLoad);
 		return new Pair<ClassLoader, List<String>>(classLoad, classNames);
 	}
 	
@@ -251,5 +279,37 @@ public class FXClassLoader {
         return jars.toString();
     }
 
+    
+    /**
+     * 获取jar包的url
+     * @param jarPath
+     * @return
+     * @throws Exception
+     */
+    private static List<String> getJarFilesPath(String jarPath) throws Exception {
+    	List<String> result = new ArrayList<>();
+        File sourceFile = new File(jarPath);
+        // String jars="";
+        if (sourceFile.exists()) {// 文件或者目录必须存在
+            if (sourceFile.isDirectory()) {// 若file对象为目录
+                // 得到该目录下以.java结尾的文件或者目录
+                sourceFile.listFiles(new FileFilter() {
+                    public boolean accept(File pathname) {
+                        if (pathname.isDirectory()) {
+                            return true;
+                        } else {
+                            String name = pathname.getName();
+                            if (name.endsWith(".jar")) {
+                            	result.add(pathname.getPath());
+                                return true;
+                            }
+                            return false;
+                        }
+                    }
+                });
+            }
+        }
+        return result;
+    }
 
 }

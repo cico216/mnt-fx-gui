@@ -5,22 +5,26 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.HashSet;
 
 
 /* 
  *  实现热部署，自定义ClassLoader，加载的是.class 
  */  
-public class CustomClassLoader extends ClassLoader {  
+public class CustomClassLoader extends URLClassLoader {  
   
     private String basedir; // 需要该类加载器直接加载的类文件的基目录  
     private HashSet<String> dynaclazns; // 需要由该类加载器直接加载的类名  
+    private URLClassLoader appClassLoad;
   
-    public CustomClassLoader(String basedir, String[] clazns) {  
-        super(null); // 指定父类加载器为 null  
+    public CustomClassLoader(URLClassLoader appClassLoad, String basedir, String[] clazns, URL [] urls) { 
+        super(urls); // 指定父类加载器为 null  
+        this.appClassLoad = appClassLoad;
         this.basedir = basedir;  
         dynaclazns = new HashSet<>();  
-        loadClassByMe(clazns);  
+        loadClassByMe(clazns);
     }  
   
     private void loadClassByMe(String[] clazns) {  
@@ -62,9 +66,14 @@ public class CustomClassLoader extends ClassLoader {
     protected  Class<?> loadClass(String name, boolean resolve)  
             throws ClassNotFoundException {  
     	 Class<?> cls = null;  
-        cls = findLoadedClass(name);  
+        cls = findLoadedClass(name);
+        if(cls == null) {
+        	cls = this.appClassLoad.loadClass(name);
+        }
+        
         if (!this.dynaclazns.contains(name) && cls == null)  
-            cls = getSystemClassLoader().loadClass(name);  
+            cls = getSystemClassLoader().loadClass(name); 
+       
         if (cls == null)  
             throw new ClassNotFoundException(name);  
         if (resolve)  

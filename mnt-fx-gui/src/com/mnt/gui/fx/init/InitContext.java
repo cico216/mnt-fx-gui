@@ -1,5 +1,6 @@
 package com.mnt.gui.fx.init;
 
+import java.net.URLClassLoader;
 import java.util.List;
 
 /**
@@ -13,10 +14,10 @@ import java.util.List;
 public abstract class InitContext
 {
 	//初始化加载  扫描的class
-	public abstract void init(List<Class<?>> paramList);
+	public abstract void init(List<Class<?>> paramList, URLClassLoader classLoad);
   
 	//界面显示后执行
-	public abstract void afterInitView();
+	public abstract void afterInitView(URLClassLoader classLoad);
   
 	//关闭时执行
 	public abstract void shutdown();

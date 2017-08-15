@@ -1,5 +1,6 @@
 package com.mnt.gui.fx.loader.classload;
 
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -69,10 +70,10 @@ public class ClassLoadSupport<T> {
 	 * @create mnt.cico
 	 * @param className
 	 */
-	public void ReloadClass(String className)
+	public void ReloadClass(String className, URLClassLoader appClassLoad)
 	{
 		classesMap.clear();
-		loadClass(classDirector);
+		loadClass(classDirector, appClassLoad);
 	}
 	
 	public void unloadClass()
@@ -90,10 +91,10 @@ public class ClassLoadSupport<T> {
 	 * @param classDirector
 	 */
 	@SuppressWarnings("unchecked")
-	public void loadClass(String classDirector)
+	public void loadClass(String classDirector, URLClassLoader appClassLoad)
 	{
 		this.classDirector = classDirector;
-		Pair<ClassLoader, List<String>> classLoader = FXClassLoader.loadClasses(classDirector);
+		Pair<ClassLoader, List<String>> classLoader = FXClassLoader.loadClasses(classDirector, appClassLoad);
 		List<String> classNames = classLoader.getValue();
 		classesMap = new HashMap<String, Class<T>>(classNames.size());
 		for (String className : classNames) {

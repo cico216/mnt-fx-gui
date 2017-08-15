@@ -23,7 +23,7 @@ public class ClassLoadUtil {
 	private static final ReentrantLock lock = new ReentrantLock();
 
 	@SuppressWarnings("rawtypes")
-	public static final void loadClass(Class<?> supportClass) {
+	public static final void loadClass(Class<?> supportClass, URLClassLoader appClassLoad) {
 		Field[] declardFields = supportClass.getDeclaredFields();
 		for (Field field : declardFields) {
 			ClassLoad classLoad = (ClassLoad) field
@@ -33,7 +33,7 @@ public class ClassLoadUtil {
 				ClassLoadSupport<?> value = new ClassLoadSupport();
 				try {
 					field.set(field, value);
-					value.loadClass(classLoad.srcPath());
+					value.loadClass(classLoad.srcPath(), appClassLoad);
 				} catch (IllegalArgumentException | IllegalAccessException e) {
 					e.printStackTrace();
 				}

@@ -84,7 +84,7 @@ public class MNTFXLauncher extends BaseLauncher {
 			}
 		}, urlBin, urlApp);
 		if (this.initContext != null) {
-			this.initContext.init(scanClass);
+			this.initContext.init(scanClass, classLoad);
 		}
 	}
 
@@ -92,7 +92,7 @@ public class MNTFXLauncher extends BaseLauncher {
 	{
 		log.info("view load succcess");
 		if (this.initContext != null) {
-			this.initContext.afterInitView();
+			this.initContext.afterInitView(classLoad);
 		}
 	}
 
