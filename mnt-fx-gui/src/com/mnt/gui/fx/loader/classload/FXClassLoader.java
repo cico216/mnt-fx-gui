@@ -61,6 +61,7 @@ public class FXClassLoader {
 		 String jarPath = System.getProperty("user.dir") + FILE_SEPARATOR + "bin;";
 		 
 		try {
+			 jarPath += System.getProperty("user.dir") + FILE_SEPARATOR + "target" + FILE_SEPARATOR + "classes;";
 			 jarPath += getJarFiles(System.getProperty("user.dir") + FILE_SEPARATOR +"lib");
 			 jarPath += getJarFiles(System.getProperty("user.dir") + FILE_SEPARATOR +"app");
 		} catch (Exception e1) {
