@@ -280,7 +280,7 @@ public class ClassLoadUtil {
 		{
 			String urlPath = url.toString();
 			String result = urlPath.replace("file:///", "").replace("file://", "").replace("file:/", "").replace("file:", "");
-			String osName = System.getProperty("os.name");
+			String osName = System.getProperty("os.name").toLowerCase();
 			if(osName.contains("mac")) {
 				result = "/" + result;
 			}
