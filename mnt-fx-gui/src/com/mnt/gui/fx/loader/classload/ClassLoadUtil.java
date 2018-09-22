@@ -279,7 +279,13 @@ public class ClassLoadUtil {
 		if (url.getProtocol().equals("file")) 
 		{
 			String urlPath = url.toString();
-			return urlPath.replace("file:///", "").replace("file://", "").replace("file:/", "").replace("file:", "");
+			String result = urlPath.replace("file:///", "").replace("file://", "").replace("file:/", "").replace("file:", "");
+			String osName = System.getProperty("os.name");
+			if(osName.contains("mac")) {
+				result = "/" + result;
+			}
+
+			return result;
 		}
 		return url.toString();
 	}
