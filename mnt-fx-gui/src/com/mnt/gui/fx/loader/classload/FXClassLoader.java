@@ -62,10 +62,10 @@ public class FXClassLoader {
 
 		if(ClassLoadUtil.isMac()) {
 			String basePath = "." + FILE_SEPARATOR;
-			jarPath = basePath + "bin/*:";
+			jarPath = basePath + "bin/:";
 
 			try {
-				jarPath += basePath + "target" + FILE_SEPARATOR + "classes/*:";
+				jarPath += basePath + "target" + FILE_SEPARATOR + "classes/:";
 				jarPath += basePath +"lib/*:";
 				jarPath += basePath +"app/*:";
 			} catch (Exception e1) {
