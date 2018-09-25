@@ -58,14 +58,29 @@ public class FXClassLoader {
 			}
 		 });
 //		 StringWriter sw = new StringWriter();
-		 String jarPath = System.getProperty("user.dir") + FILE_SEPARATOR + "bin;";
-		 
-		try {
-			 jarPath += System.getProperty("user.dir") + FILE_SEPARATOR + "target" + FILE_SEPARATOR + "classes;";
-			 jarPath += getJarFiles(System.getProperty("user.dir") + FILE_SEPARATOR +"lib");
-			 jarPath += getJarFiles(System.getProperty("user.dir") + FILE_SEPARATOR +"app");
-		} catch (Exception e1) {
-			e1.printStackTrace();
+		 String jarPath;
+
+		if(ClassLoadUtil.isMac()) {
+			String basePath = "." + FILE_SEPARATOR;
+			jarPath = basePath + "bin/*:";
+
+			try {
+				jarPath += basePath + "target" + FILE_SEPARATOR + "classes/*:";
+				jarPath += basePath +"lib/*:";
+				jarPath += basePath +"app/*:";
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+		} else {
+			jarPath = System.getProperty("user.dir") + FILE_SEPARATOR + "bin;";
+
+			try {
+				jarPath += System.getProperty("user.dir") + FILE_SEPARATOR + "target" + FILE_SEPARATOR + "classes;";
+				jarPath += getJarFiles(System.getProperty("user.dir") + FILE_SEPARATOR +"lib");
+				jarPath += getJarFiles(System.getProperty("user.dir") + FILE_SEPARATOR +"app");
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
 		}
 		 
 		 List<String> options = Arrays.asList(new String[] { "-encoding", "UTF-8", "-classpath", jarPath});

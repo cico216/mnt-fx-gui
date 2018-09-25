@@ -280,13 +280,24 @@ public class ClassLoadUtil {
 		{
 			String urlPath = url.toString();
 			String result = urlPath.replace("file:///", "").replace("file://", "").replace("file:/", "").replace("file:", "");
-			String osName = System.getProperty("os.name").toLowerCase();
-			if(osName.contains("mac")) {
+			if(isMac()) {
 				result = "/" + result;
 			}
 
 			return result;
 		}
 		return url.toString();
+	}
+
+	/**
+	 * 是否为mac
+	 * @return
+	 */
+	public static boolean isMac() {
+		String osName = System.getProperty("os.name").toLowerCase();
+		if(osName.contains("mac")) {
+			return true;
+		}
+		return false;
 	}
 }
