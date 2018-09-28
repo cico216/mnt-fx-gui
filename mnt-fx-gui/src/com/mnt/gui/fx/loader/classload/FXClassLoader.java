@@ -67,7 +67,7 @@ public class FXClassLoader {
 			try {
 				jarPath += basePath + "target" + FILE_SEPARATOR + "classes/:";
 				jarPath += basePath +"lib/*:";
-				jarPath += basePath +"app/*:";
+				jarPath += getJarFiles(System.getProperty("user.dir") + FILE_SEPARATOR +"app",":");
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
@@ -76,13 +76,13 @@ public class FXClassLoader {
 
 			try {
 				jarPath += System.getProperty("user.dir") + FILE_SEPARATOR + "target" + FILE_SEPARATOR + "classes;";
-				jarPath += getJarFiles(System.getProperty("user.dir") + FILE_SEPARATOR +"lib");
-				jarPath += getJarFiles(System.getProperty("user.dir") + FILE_SEPARATOR +"app");
+				jarPath += getJarFiles(System.getProperty("user.dir") + FILE_SEPARATOR +"lib", ";");
+				jarPath += getJarFiles(System.getProperty("user.dir") + FILE_SEPARATOR +"app",";");
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
 		}
-		 
+		System.err.println("jarPath = " + jarPath);
 		 List<String> options = Arrays.asList(new String[] { "-encoding", "UTF-8", "-classpath", jarPath});
 		 CompilationTask compilationTask = javac.getTask(null, manager, null, options, null, it);  
 		 
@@ -269,7 +269,7 @@ public class FXClassLoader {
      * @param jarPath
      * @throws Exception
      */
-    private static String getJarFiles(String jarPath) throws Exception {
+    private static String getJarFiles(String jarPath, String endflag) throws Exception {
     	StringBuilder jars = new StringBuilder();
         File sourceFile = new File(jarPath);
         // String jars="";
@@ -283,7 +283,7 @@ public class FXClassLoader {
                         } else {
                             String name = pathname.getName();
                             if (name.endsWith(".jar")) {
-                            	jars.append(pathname.getPath() + ";");
+                            	jars.append(pathname.getPath() + endflag);
                                 return true;
                             }
                             return false;
