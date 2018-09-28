@@ -82,7 +82,7 @@ public class FXClassLoader {
 				e1.printStackTrace();
 			}
 		}
-		System.err.println("jarPath = " + jarPath);
+//		System.err.println("jarPath = " + jarPath);
 		 List<String> options = Arrays.asList(new String[] { "-encoding", "UTF-8", "-classpath", jarPath});
 		 CompilationTask compilationTask = javac.getTask(null, manager, null, options, null, it);  
 		 
